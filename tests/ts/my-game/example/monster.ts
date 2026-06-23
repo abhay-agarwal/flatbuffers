@@ -93,9 +93,9 @@ inventory(index: number):number|null {
   return offset ? this.bb!.readUint8(this.bb!.__vector(this.bb_pos + offset) + index) : 0;
 }
 
-inventoryLength():number {
+inventoryLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 14);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 inventoryArray():Uint8Array|null {
@@ -134,9 +134,9 @@ test4(index: number, obj?:Test):Test|null {
   return offset ? (obj || new Test()).__init(this.bb!.__vector(this.bb_pos + offset) + index * 4, this.bb!) : null;
 }
 
-test4Length():number {
+test4Length():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 22);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 testarrayofstring(index: number):string
@@ -146,9 +146,9 @@ testarrayofstring(index: number,optionalEncoding?:any):string|Uint8Array|null {
   return offset ? this.bb!.__string(this.bb!.__vector(this.bb_pos + offset) + index * 4, optionalEncoding) : null;
 }
 
-testarrayofstringLength():number {
+testarrayofstringLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 24);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 /**
@@ -160,9 +160,9 @@ testarrayoftables(index: number, obj?:Monster):Monster|null {
   return offset ? (obj || new Monster()).__init(this.bb!.__indirect(this.bb!.__vector(this.bb_pos + offset) + index * 4), this.bb!) : null;
 }
 
-testarrayoftablesLength():number {
+testarrayoftablesLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 26);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 enemy(obj?:Monster):Monster|null {
@@ -175,9 +175,9 @@ testnestedflatbuffer(index: number):number|null {
   return offset ? this.bb!.readUint8(this.bb!.__vector(this.bb_pos + offset) + index) : 0;
 }
 
-testnestedflatbufferLength():number {
+testnestedflatbufferLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 30);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 testnestedflatbufferArray():Uint8Array|null {
@@ -339,9 +339,9 @@ testarrayofbools(index: number):boolean|null {
   return offset ? !!this.bb!.readInt8(this.bb!.__vector(this.bb_pos + offset) + index) : false;
 }
 
-testarrayofboolsLength():number {
+testarrayofboolsLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 52);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 testarrayofboolsArray():Int8Array|null {
@@ -404,9 +404,9 @@ testarrayofstring2(index: number,optionalEncoding?:any):string|Uint8Array|null {
   return offset ? this.bb!.__string(this.bb!.__vector(this.bb_pos + offset) + index * 4, optionalEncoding) : null;
 }
 
-testarrayofstring2Length():number {
+testarrayofstring2Length():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 60);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 testarrayofsortedstruct(index: number, obj?:Ability):Ability|null {
@@ -414,9 +414,9 @@ testarrayofsortedstruct(index: number, obj?:Ability):Ability|null {
   return offset ? (obj || new Ability()).__init(this.bb!.__vector(this.bb_pos + offset) + index * 8, this.bb!) : null;
 }
 
-testarrayofsortedstructLength():number {
+testarrayofsortedstructLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 62);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 flex(index: number):number|null {
@@ -424,9 +424,9 @@ flex(index: number):number|null {
   return offset ? this.bb!.readUint8(this.bb!.__vector(this.bb_pos + offset) + index) : 0;
 }
 
-flexLength():number {
+flexLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 64);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 flexArray():Uint8Array|null {
@@ -439,9 +439,9 @@ test5(index: number, obj?:Test):Test|null {
   return offset ? (obj || new Test()).__init(this.bb!.__vector(this.bb_pos + offset) + index * 4, this.bb!) : null;
 }
 
-test5Length():number {
+test5Length():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 66);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 vectorOfLongs(index: number):bigint|null {
@@ -449,9 +449,9 @@ vectorOfLongs(index: number):bigint|null {
   return offset ? this.bb!.readInt64(this.bb!.__vector(this.bb_pos + offset) + index * 8) : BigInt(0);
 }
 
-vectorOfLongsLength():number {
+vectorOfLongsLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 68);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 vectorOfDoubles(index: number):number|null {
@@ -459,9 +459,9 @@ vectorOfDoubles(index: number):number|null {
   return offset ? this.bb!.readFloat64(this.bb!.__vector(this.bb_pos + offset) + index * 8) : 0;
 }
 
-vectorOfDoublesLength():number {
+vectorOfDoublesLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 70);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 vectorOfDoublesArray():Float64Array|null {
@@ -479,9 +479,9 @@ vectorOfReferrables(index: number, obj?:Referrable):Referrable|null {
   return offset ? (obj || new Referrable()).__init(this.bb!.__indirect(this.bb!.__vector(this.bb_pos + offset) + index * 4), this.bb!) : null;
 }
 
-vectorOfReferrablesLength():number {
+vectorOfReferrablesLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 74);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 singleWeakReference():bigint {
@@ -505,9 +505,9 @@ vectorOfWeakReferences(index: number):bigint|null {
   return offset ? this.bb!.readUint64(this.bb!.__vector(this.bb_pos + offset) + index * 8) : BigInt(0);
 }
 
-vectorOfWeakReferencesLength():number {
+vectorOfWeakReferencesLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 78);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 vectorOfStrongReferrables(index: number, obj?:Referrable):Referrable|null {
@@ -515,9 +515,9 @@ vectorOfStrongReferrables(index: number, obj?:Referrable):Referrable|null {
   return offset ? (obj || new Referrable()).__init(this.bb!.__indirect(this.bb!.__vector(this.bb_pos + offset) + index * 4), this.bb!) : null;
 }
 
-vectorOfStrongReferrablesLength():number {
+vectorOfStrongReferrablesLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 80);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 coOwningReference():bigint {
@@ -541,9 +541,9 @@ vectorOfCoOwningReferences(index: number):bigint|null {
   return offset ? this.bb!.readUint64(this.bb!.__vector(this.bb_pos + offset) + index * 8) : BigInt(0);
 }
 
-vectorOfCoOwningReferencesLength():number {
+vectorOfCoOwningReferencesLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 84);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 nonOwningReference():bigint {
@@ -567,9 +567,9 @@ vectorOfNonOwningReferences(index: number):bigint|null {
   return offset ? this.bb!.readUint64(this.bb!.__vector(this.bb_pos + offset) + index * 8) : BigInt(0);
 }
 
-vectorOfNonOwningReferencesLength():number {
+vectorOfNonOwningReferencesLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 88);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 anyUniqueType():AnyUniqueAliases {
@@ -597,9 +597,9 @@ vectorOfEnums(index: number):Color|null {
   return offset ? this.bb!.readUint8(this.bb!.__vector(this.bb_pos + offset) + index) : null;
 }
 
-vectorOfEnumsLength():number {
+vectorOfEnumsLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 98);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 vectorOfEnumsArray():Uint8Array|null {
@@ -628,9 +628,9 @@ testrequirednestedflatbuffer(index: number):number|null {
   return offset ? this.bb!.readUint8(this.bb!.__vector(this.bb_pos + offset) + index) : 0;
 }
 
-testrequirednestedflatbufferLength():number {
+testrequirednestedflatbufferLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 102);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 testrequirednestedflatbufferArray():Uint8Array|null {
@@ -643,9 +643,9 @@ scalarKeySortedTables(index: number, obj?:Stat):Stat|null {
   return offset ? (obj || new Stat()).__init(this.bb!.__indirect(this.bb!.__vector(this.bb_pos + offset) + index * 4), this.bb!) : null;
 }
 
-scalarKeySortedTablesLength():number {
+scalarKeySortedTablesLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 104);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 nativeInline(obj?:Test):Test|null {

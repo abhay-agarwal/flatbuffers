@@ -47,9 +47,9 @@ charactersType(index: number):Character|null {
   return offset ? this.bb!.readUint8(this.bb!.__vector(this.bb_pos + offset) + index) : null;
 }
 
-charactersTypeLength():number {
+charactersTypeLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 8);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 charactersTypeArray():Uint8Array|null {
@@ -62,9 +62,9 @@ characters(index: number, obj:any|string):any|string|null {
   return offset ? this.bb!.__union_with_string(obj, this.bb!.__vector(this.bb_pos + offset) + index * 4) : null;
 }
 
-charactersLength():number {
+charactersLength():number|null {
   const offset = this.bb!.__offset(this.bb_pos, 10);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : null;
 }
 
 static getFullyQualifiedName(): "Movie" {

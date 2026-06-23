@@ -112,6 +112,26 @@ public struct Table {
     return bb.readSlice(index: Int(vector(at: o)), count: Int(vector(count: o)))
   }
 
+  /// Returns a vector of type T at a specific offset, or `nil` if the field is
+  /// not present in the buffer. This allows distinguishing a missing vector
+  /// from a present-but-empty one.
+  /// - Parameters:
+  ///   - off: Readable offset
+  ///   - byteSize: The size of each element in the vector
+  /// - Returns: A vector of type T, or `nil` if the vector is absent
+  public func vectorOrNil<T>(
+    at off: VOffset,
+    byteSize: Int) -> FlatbufferVector<T>?
+  {
+    let o = offset(off)
+    guard o != 0 else { return nil }
+    return FlatbufferVector(
+      bb: bb,
+      startPosition: vector(at: o),
+      count: Int(vector(count: o)),
+      byteSize: byteSize)
+  }
+
   public func vector<T>(at off: VOffset, byteSize: Int) -> FlatbufferVector<T> {
     let off = offset(off)
     return FlatbufferVector(

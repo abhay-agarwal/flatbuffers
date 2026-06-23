@@ -191,16 +191,16 @@ public struct MyGame_Sample_Monster: FlatBufferVerifiableTable, FlatbuffersVecto
   @discardableResult public func mutate(hp: Int16) -> Bool {let o = _accessor.offset(VT.hp);  return _accessor.mutate(hp, index: o) }
   public var name: String? { let o = _accessor.offset(VT.name); return o == 0 ? nil : _accessor.string(at: o) }
   public var nameSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.name) }
-  public var inventory: FlatbufferVector<UInt8> { return _accessor.vector(at: VT.inventory, byteSize: 1) }
+  public var inventory: FlatbufferVector<UInt8>? { return _accessor.vectorOrNil(at: VT.inventory, byteSize: 1) }
   public func mutate(inventory: UInt8, at index: Int32) -> Bool { let o = _accessor.offset(VT.inventory); return _accessor.directMutate(inventory, index: _accessor.vector(at: o) + index * 1) }
   public func withUnsafePointerToInventory<T>(_ body: (UnsafeRawBufferPointer, Int) throws -> T) rethrows -> T? { return try _accessor.withUnsafePointerToSlice(at: VT.inventory, body: body) }
   public var color: MyGame_Sample_Color { let o = _accessor.offset(VT.color); return o == 0 ? .blue : MyGame_Sample_Color(rawValue: _accessor.readBuffer(of: Int8.self, at: o)) ?? .blue }
   @discardableResult public func mutate(color: MyGame_Sample_Color) -> Bool {let o = _accessor.offset(VT.color);  return _accessor.mutate(color.rawValue, index: o) }
-  public var weapons: FlatbufferVector<MyGame_Sample_Weapon> { return _accessor.vector(at: VT.weapons, byteSize: 4) }
+  public var weapons: FlatbufferVector<MyGame_Sample_Weapon>? { return _accessor.vectorOrNil(at: VT.weapons, byteSize: 4) }
   public var equippedType: MyGame_Sample_Equipment { let o = _accessor.offset(VT.equippedType); return o == 0 ? .none_ : MyGame_Sample_Equipment(rawValue: _accessor.readBuffer(of: UInt8.self, at: o)) ?? .none_ }
   public func equipped<T: FlatbuffersInitializable>(type: T.Type) -> T? { let o = _accessor.offset(VT.equipped); return o == 0 ? nil : _accessor.union(o) }
-  public var path: FlatbufferVector<MyGame_Sample_Vec3> { return _accessor.vector(at: VT.path, byteSize: 12) }
-  public var mutablePath: FlatbufferVector<MyGame_Sample_Vec3_Mutable> { return _accessor.vector(at: VT.path, byteSize: 12) }
+  public var path: FlatbufferVector<MyGame_Sample_Vec3>? { return _accessor.vectorOrNil(at: VT.path, byteSize: 12) }
+  public var mutablePath: FlatbufferVector<MyGame_Sample_Vec3_Mutable>? { return _accessor.vectorOrNil(at: VT.path, byteSize: 12) }
   public func withUnsafePointerToPath<T>(_ body: (UnsafeRawBufferPointer, Int) throws -> T) rethrows -> T? { return try _accessor.withUnsafePointerToSlice(at: VT.path, body: body) }
   public static func startMonster(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 11) }
   public static func add(pos: MyGame_Sample_Vec3?, _ fbb: inout FlatBufferBuilder) { guard let pos = pos else { return }; fbb.create(struct: pos, position: VT.pos) }
@@ -371,11 +371,13 @@ public class MyGame_Sample_MonsterT: NativeObject {
     hp = _t.hp
     name = _t.name
     inventory = []
-    inventory.append(contentsOf: _t.inventory)
+    if let __vec = _t.inventory { inventory.append(contentsOf: __vec) }
     color = _t.color
     weapons = []
-    for val in _t.weapons{
-        weapons.append(val.unpack())
+    if let __vec = _t.weapons {
+        for val in __vec {
+          weapons.append(val.unpack())
+        }
     }
     switch _t.equippedType {
     case .weapon:
@@ -384,7 +386,7 @@ public class MyGame_Sample_MonsterT: NativeObject {
     default: break
     }
     path = []
-    path.append(contentsOf: _t.path)
+    if let __vec = _t.path { path.append(contentsOf: __vec) }
   }
 
   public init() {

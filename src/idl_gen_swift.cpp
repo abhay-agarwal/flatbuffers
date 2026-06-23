@@ -892,6 +892,18 @@ class SwiftGenerator : public BaseGenerator {
     }
   }
 
+  // A vector is treated as optional (the accessor returns nil when the vector
+  // is absent) when it is neither required nor has an empty-vector default. This
+  // lets callers distinguish a missing vector from a present-but-empty one.
+  // Union and utype vectors keep their existing non-optional accessors.
+  bool IsOptionalVector(const FieldDef& field) const {
+    const auto vectortype = field.value.type.VectorType();
+    return field.value.type.base_type == BASE_TYPE_VECTOR &&
+           vectortype.base_type != BASE_TYPE_UNION &&
+           vectortype.base_type != BASE_TYPE_UTYPE &&
+           !(field.IsRequired() || field.value.constant == "[]");
+  }
+
   void GenTableReaderVectorFields(const FieldDef& field) {
     const auto vectortype = field.value.type.VectorType();
     code_.SetValue("SIZE", NumToString(InlineSize(vectortype)));
@@ -900,12 +912,17 @@ class SwiftGenerator : public BaseGenerator {
       code_.SetValue("VALUETYPE", "String?");
     }
 
+    const bool optional_vector = IsOptionalVector(field);
+    const std::string vector_opt = optional_vector ? "?" : "";
+    const std::string vector_reader =
+        optional_vector ? "vectorOrNil" : "vector";
+
     if (vectortype.base_type != BASE_TYPE_UNION) {
       code_ +=
           "{{ACCESS_TYPE}} var {{FIELDVAR}}: "
-          "FlatbufferVector<{{VALUETYPE}}> "
-          "{ return {{ACCESS}}.vector(at: {{TABLEOFFSET}}.{{OFFSET}}, "
-          "byteSize: {{SIZE}}) }";
+          "FlatbufferVector<{{VALUETYPE}}>" +
+          vector_opt + " { return {{ACCESS}}." + vector_reader +
+          "(at: {{TABLEOFFSET}}.{{OFFSET}}, byteSize: {{SIZE}}) }";
     }
 
     if (IsScalar(vectortype.base_type) && !IsEnum(vectortype) &&
@@ -920,9 +937,9 @@ class SwiftGenerator : public BaseGenerator {
       code_.SetValue("FIELDVAR", namer_.Method("mutable", field));
       code_ +=
           "{{ACCESS_TYPE}} var {{FIELDVAR}}: "
-          "FlatbufferVector<{{VALUETYPE}}_Mutable> "
-          "{ return {{ACCESS}}.vector(at: {{TABLEOFFSET}}.{{OFFSET}}, "
-          "byteSize: {{SIZE}}) }";
+          "FlatbufferVector<{{VALUETYPE}}_Mutable>" +
+          vector_opt + " { return {{ACCESS}}." + vector_reader +
+          "(at: {{TABLEOFFSET}}.{{OFFSET}}, byteSize: {{SIZE}}) }";
       GenUnsafeBufferPointer(field);
       return;
     }
@@ -1723,6 +1740,12 @@ class SwiftGenerator : public BaseGenerator {
       base_constructor.push_back(field_var + " = []");
     }
 
+    // Optional vector accessors return `FlatbufferVector?`, so reads are guarded
+    // with an optional binding (a missing vector simply leaves the native array
+    // empty).
+    const bool optional_vector = IsOptionalVector(field);
+    const std::string vector_read = "_t." + field_field;
+
     switch (vectortype.base_type) {
       case BASE_TYPE_STRUCT: {
         code_.SetValue("VALUETYPE", GenType(vectortype, true));
@@ -1730,13 +1753,26 @@ class SwiftGenerator : public BaseGenerator {
         code_ +=
             "{{ACCESS_TYPE}} var {{FIELDVAR}}: [{{VALUETYPE}}{{OPTIONAL}}]";
         if (!vectortype.struct_def->fixed) {
-          buffer_constructor.push_back("for val in _t." + field_field + "{");
-          buffer_constructor.push_back(indentation + field_var +
-                                       ".append(val.unpack())");
-          buffer_constructor.push_back("}");
+          if (optional_vector) {
+            buffer_constructor.push_back("if let __vec = " + vector_read + " {");
+            buffer_constructor.push_back(indentation + "for val in __vec {");
+            buffer_constructor.push_back(indentation + "  " + field_var +
+                                         ".append(val.unpack())");
+            buffer_constructor.push_back(indentation + "}");
+            buffer_constructor.push_back("}");
+          } else {
+            buffer_constructor.push_back("for val in " + vector_read + " {");
+            buffer_constructor.push_back(indentation + field_var +
+                                         ".append(val.unpack())");
+            buffer_constructor.push_back("}");
+          }
+        } else if (optional_vector) {
+          buffer_constructor.push_back("if let __vec = " + vector_read +
+                                       " { " + field_var +
+                                       ".append(contentsOf: __vec) }");
         } else {
-          buffer_constructor.push_back(field_var + ".append(contentsOf: _t." +
-                                       field_field + ")");
+          buffer_constructor.push_back(field_var + ".append(contentsOf: " +
+                                       vector_read + ")");
         }
         break;
       }
@@ -1758,8 +1794,14 @@ class SwiftGenerator : public BaseGenerator {
             (IsString(vectortype) ? "String?" : GenType(vectortype)));
         code_ += "{{ACCESS_TYPE}} var {{FIELDVAR}}: [{{VALUETYPE}}]";
 
-        buffer_constructor.push_back(field_var + ".append(contentsOf: _t." +
-                                     field_field + ")");
+        if (optional_vector) {
+          buffer_constructor.push_back("if let __vec = " + vector_read +
+                                       " { " + field_var +
+                                       ".append(contentsOf: __vec) }");
+        } else {
+          buffer_constructor.push_back(field_var + ".append(contentsOf: " +
+                                       vector_read + ")");
+        }
         break;
       }
     }

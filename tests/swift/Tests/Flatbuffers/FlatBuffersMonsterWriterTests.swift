@@ -266,11 +266,11 @@ struct FlatBuffersMonsterWriterTests {
     fbb.finish(offset: root)
     var buffer = fbb.sizedBuffer
     let monster: Monster = getRoot(byteBuffer: &buffer)
-    let values = monster.testarrayofbools
+    let values = monster.testarrayofbools!
 
     #expect(boolArray.count == values.count)
 
-    for (index, bool) in monster.testarrayofbools.enumerated() {
+    for (index, bool) in values.enumerated() {
       #expect(bool == boolArray[index])
     }
   }
@@ -471,9 +471,9 @@ struct FlatBuffersMonsterWriterTests {
 
     let monster: Monster = getRoot(byteBuffer: &fb)
     #expect(monster.mutate(mana: 10) == false)
-    #expect(monster.testarrayoftables[0].name == "Barney")
-    #expect(monster.testarrayoftables[1].name == "Frodo")
-    #expect(monster.testarrayoftables[2].name == "Wilma")
+    #expect(monster.testarrayoftables![0].name == "Barney")
+    #expect(monster.testarrayoftables![1].name == "Frodo")
+    #expect(monster.testarrayoftables![2].name == "Wilma")
 
     // Example of searching for a table by the key
     #expect(monster.testarrayoftablesBy(key: "Frodo") != nil)
@@ -488,8 +488,8 @@ struct FlatBuffersMonsterWriterTests {
     #expect(monster.mutate(inventory: 4, at: 3) == true)
     #expect(monster.mutate(inventory: 5, at: 4) == true)
 
-    for i in 0..<monster.inventory.count {
-      #expect(monster.inventory[i] == Byte(i + 1))
+    for i in 0..<monster.inventory!.count {
+      #expect(monster.inventory![i] == Byte(i + 1))
     }
 
     #expect(monster.mutate(inventory: 0, at: 0) == true)
@@ -508,11 +508,11 @@ struct FlatBuffersMonsterWriterTests {
     #expect(vec?.x == 1)
     #expect(vec?.mutate(test1: 3) == true)
 
-    let mutableTest4 = monster.mutableTest4
+    let mutableTest4 = monster.mutableTest4!
     let orignalValues = mutableTest4[0].a
     #expect(mutableTest4[0].mutate(a: 100) == true)
-    #expect(monster.test4[0].a != orignalValues)
-    #expect(monster.test4[0].a == 100)
+    #expect(monster.test4![0].a != orignalValues)
+    #expect(monster.test4![0].a == 100)
     #expect(mutableTest4[0].mutate(a: orignalValues) == true)
   }
 
@@ -536,9 +536,9 @@ struct FlatBuffersMonsterWriterTests {
     #expect(monster.mutate(mana: 10) == false)
 
     #expect(monster.mana == 150)
-    #expect(monster.inventory.count == 5)
+    #expect(monster.inventory!.count == 5)
     var sum: Byte = 0
-    for inventory in monster.inventory {
+    for inventory in monster.inventory! {
       sum += inventory
     }
     #expect(sum == 10)
@@ -551,9 +551,9 @@ struct FlatBuffersMonsterWriterTests {
       #expect(sum == 10)
     }
 
-    #expect(monster.test4.count == 2)
+    #expect(monster.test4!.count == 2)
 
-    let test4 = monster.test4
+    let test4 = monster.test4!
     var sum0 = 0
     for test0 in test4 {
       sum0 += Int(test0.a) + Int(test0.b)
@@ -577,14 +577,14 @@ struct FlatBuffersMonsterWriterTests {
       #expect(pointerSum == 100)
     }
 
-    let mutableTest4 = monster.mutableTest4
+    let mutableTest4 = monster.mutableTest4!
     var sum2 = 0
     for test0 in mutableTest4 {
       sum2 += Int(test0.a) + Int(test0.b)
     }
     #expect(sum2 == 100)
 
-    let stringArray = monster.testarrayofstring
+    let stringArray = monster.testarrayofstring!
     #expect(stringArray.count == 2)
     #expect(stringArray[0] == "test1")
     #expect(stringArray[1] == "test2")
@@ -593,10 +593,10 @@ struct FlatBuffersMonsterWriterTests {
     let array = monster.nameSegmentArray
     #expect(String(bytes: array ?? [], encoding: .utf8) == "MyMonster")
 
-    if 0 == monster.testarrayofbools.count {
-      #expect(monster.testarrayofbools.isEmpty == true)
+    if 0 == (monster.testarrayofbools?.count ?? 0) {
+      #expect(monster.testarrayofbools?.isEmpty ?? true)
     } else {
-      #expect(monster.testarrayofbools.isEmpty == false)
+      #expect(monster.testarrayofbools?.isEmpty == false)
     }
   }
 
@@ -681,7 +681,7 @@ struct FlatBuffersMonsterWriterTests {
     fbb.finish(offset: root)
     var buffer = fbb.sizedBuffer
     let monster: Monster = getRoot(byteBuffer: &buffer)
-    let values = monster.inventory
+    let values = monster.inventory!
 
     monster.withUnsafePointerToInventory { ptr, count in
       let array = Array(ptr)

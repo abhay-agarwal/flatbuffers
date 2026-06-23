@@ -2079,10 +2079,20 @@ class TsGenerator : public BaseGenerator {
         // Emit a length helper
         GenDocComment(code_ptr);
         code += namer_.Method(field, "Length");
-        code += "():number {\n" + offset_prefix + "offset ? ";
 
-        code +=
-            GenBBAccess() + ".__vector_len(this.bb_pos + offset) : 0;\n}\n\n";
+        // For optional vectors (not required and without a default value), the
+        // length helper returns null when the vector is absent, so callers can
+        // distinguish a missing vector from a present-but-empty one.
+        const bool nullable_length =
+            !(field.IsRequired() || HasDefaultValue(field));
+        const std::string length_return_type =
+            nullable_length ? ("number|" + null_keyword_) : "number";
+        const std::string length_default =
+            nullable_length ? null_keyword_ : "0";
+        code += "():" + length_return_type + " {\n" + offset_prefix + "offset ? ";
+
+        code += GenBBAccess() + ".__vector_len(this.bb_pos + offset) : " +
+                length_default + ";\n}\n\n";
 
         // For scalar types, emit a typed array helper
         auto vectorType = field.value.type.VectorType();

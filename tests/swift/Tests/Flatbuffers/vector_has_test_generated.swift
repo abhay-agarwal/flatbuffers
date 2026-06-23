@@ -23,11 +23,11 @@ public struct Swift_Tests_Vectors: FlatBufferVerifiableTable, FlatbuffersVectorI
     static let array: VOffset = 8
   }
 
-  public var none_: FlatbufferVector<UInt64> { return _accessor.vector(at: VT.none_, byteSize: 8) }
+  public var none_: FlatbufferVector<UInt64>? { return _accessor.vectorOrNil(at: VT.none_, byteSize: 8) }
   public func withUnsafePointerToNone<T>(_ body: (UnsafeRawBufferPointer, Int) throws -> T) rethrows -> T? { return try _accessor.withUnsafePointerToSlice(at: VT.none_, body: body) }
-  public var empty: FlatbufferVector<UInt64> { return _accessor.vector(at: VT.empty, byteSize: 8) }
+  public var empty: FlatbufferVector<UInt64>? { return _accessor.vectorOrNil(at: VT.empty, byteSize: 8) }
   public func withUnsafePointerToEmpty<T>(_ body: (UnsafeRawBufferPointer, Int) throws -> T) rethrows -> T? { return try _accessor.withUnsafePointerToSlice(at: VT.empty, body: body) }
-  public var array: FlatbufferVector<UInt64> { return _accessor.vector(at: VT.array, byteSize: 8) }
+  public var array: FlatbufferVector<UInt64>? { return _accessor.vectorOrNil(at: VT.array, byteSize: 8) }
   public func withUnsafePointerToArray<T>(_ body: (UnsafeRawBufferPointer, Int) throws -> T) rethrows -> T? { return try _accessor.withUnsafePointerToSlice(at: VT.array, body: body) }
   public static func startVectors(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 3) }
   public static func addVectorOf(none_: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: none_, at: VT.none_) }

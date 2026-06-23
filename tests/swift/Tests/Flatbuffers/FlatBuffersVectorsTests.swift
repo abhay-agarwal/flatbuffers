@@ -175,14 +175,18 @@ struct FlatBuffersVectors {
 
     var byteBuffer = ByteBuffer(bytes: builder.sizedByteArray)
     let msg: Swift_Tests_Vectors = getRoot(byteBuffer: &byteBuffer)
-    #expect(msg.none_.isEmpty == true)
-    #expect(msg.empty.isEmpty == true)
-    #expect(msg.empty.count == 0)
-    #expect(msg.array.isEmpty == false)
-    #expect(msg.array.count == 3)
+    // `none` was never added to the buffer, so its accessor returns nil,
+    // distinguishing it from `empty` which is present but has no elements.
+    #expect(msg.none_ == nil)
+    #expect(msg.empty != nil)
+    #expect(msg.empty?.isEmpty == true)
+    #expect(msg.empty?.count == 0)
+    #expect(msg.array?.isEmpty == false)
+    #expect(msg.array?.count == 3)
 
-    for i in msg.array.startIndex..<msg.array.endIndex {
-      #expect(msg.array[i] == 1 + UInt64(i))
+    let arrayVector = msg.array!
+    for i in arrayVector.startIndex..<arrayVector.endIndex {
+      #expect(arrayVector[i] == 1 + UInt64(i))
     }
 
     let array = msg.withUnsafePointerToArray { ptr, count in
